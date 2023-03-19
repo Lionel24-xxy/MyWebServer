@@ -24,6 +24,7 @@ void HttpConn::init(int fd, const sockaddr_in& addr) {
     writeBuff_.RetrieveAll();
     readBuff_.RetrieveAll();
     isClose_ = false;
+    //LOG_INFO("Client[%d](%s:%d) in, userCount:%d", fd_, GetIP(), GetPort(), (int)userCount);
 }
 
 void HttpConn::Close() {
@@ -32,6 +33,7 @@ void HttpConn::Close() {
         isClose_ = true;
         userCount--;
         close(fd_);
+        //LOG_INFO("Client[%d](%s:%d) quit, UserCount:%d", fd_, GetIP(), GetPort(), (int)userCount);
     }
 }
 
@@ -94,6 +96,7 @@ bool HttpConn::process() {
         return false;
     }
     else if(request_.parse(readBuff_)) {
+        //LOG_DEBUG("%s", request_.path().c_str());
         response_.Init(srcDir, request_.path(), request_.IsKeepAlive(), 200);
     } else {
         response_.Init(srcDir, request_.path(), false, 400);
@@ -111,5 +114,6 @@ bool HttpConn::process() {
         iov_[1].iov_len = response_.FileLen();
         iovCnt_ = 2;
     }
+    //LOG_DEBUG("filesize:%d, %d  to %d", response_.FileLen() , iovCnt_, ToWriteBytes());
     return true;
 }

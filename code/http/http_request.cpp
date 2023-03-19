@@ -94,6 +94,7 @@ bool HttpRequest::parse(Buffer& buff) {
         }
         buff.RetrieveUntil(lineEnd + 2);
     }
+    //LOG_DEBUG("[%s], [%s], [%s]", method_.c_str(), path_.c_str(), version_.c_str());
     return true;
 }
 
@@ -121,6 +122,7 @@ bool HttpRequest::ParseRequestLine_(const string& line) {
         state_ = HEADERS;
         return true;
     }
+    //LOG_ERROR("RequestLine Error");
     return false;
 }
 
@@ -139,6 +141,7 @@ void HttpRequest::ParseBody_(const string& line) {
     body_ = line;
     ParsePost_();
     state_ = FINISH;
+    //LOG_DEBUG("Body:%s, len:%d", line.c_str(), line.size());
 }
 
 int HttpRequest::ConverHex(char ch) {
@@ -147,12 +150,12 @@ int HttpRequest::ConverHex(char ch) {
     return ch;
 }
 
-// 后续实现注册和登录功能后才用得到
 void HttpRequest::ParsePost_() {
     if(method_ == "POST" && header_["Content-Type"] == "application/x-www-form-urlencoded") {
         ParseFromUrlencoded_();
         if(DEFAULT_HTML_TAG.count(path_)) {
             int tag = DEFAULT_HTML_TAG.find(path_)->second;
+            //LOG_DEBUG("Tag:%d", tag);
             if(tag == 0 || tag == 1) {
                 bool isLogin = (tag == 1);
 //                if(UserVerify(post_["username"], post_["password"], isLogin)) {

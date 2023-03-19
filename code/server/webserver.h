@@ -16,10 +16,12 @@
 
 #include "../http/http_connect.h"
 #include "epoller.h"
+#include "../pool/threadpool.h"
+#include "../timer/heap_timer.h"
 
 class WebServer {
 public:
-    WebServer(int port, int trigMode, int timeoutMS, bool OptLinger);
+    WebServer(int port, int trigMode, int timeoutMS, bool OptLinger, int threadNum);
 
     ~WebServer();
     void Start();
@@ -33,7 +35,7 @@ private:
     void DealWrite_(HttpConn* client);
     void DealRead_(HttpConn* client);
 
-    void SendError_(int fd, const char*info);
+    static void SendError_(int fd, const char*info);
     void ExtentTime_(HttpConn* client);
     void CloseConn_(HttpConn* client);
 
@@ -49,14 +51,16 @@ private:
     bool openLinger_;
     int timeoutMS_;  /* 毫秒MS */
     bool isClose_;
-    int listenFd_;
+    int listenFd_{};
     char* srcDir_;
 
-    uint32_t listenEvent_;
-    uint32_t connEvent_;
+    uint32_t listenEvent_{};
+    uint32_t connEvent_{};
 
     std::unordered_map<int, HttpConn> users_;
     std::unique_ptr<Epoller> epoller_;
+    std::unique_ptr<ThreadPool> threadpool_;
+    std::unique_ptr<HeapTimer> timer_;
 };
 
 #endif //MYWEBSERVER_WEBSERVER_H

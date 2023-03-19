@@ -2,6 +2,6 @@
 #include "server/webserver.h"
 
 int main() {
-    WebServer server(8080, 3, 60000, true);
+    WebServer server(8080, 3, 60000, true, 8);
     server.Start();
 }

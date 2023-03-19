@@ -4,4 +4,6 @@ project(myWebServer)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 set(CMAKE_CXX_STANDARD 14)
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-add_executable(myWebServer code/main.cpp code/buffer/buffer.h code/buffer/buffer.cpp code/http/http_request.h code/http/http_request.cpp code/http/http_response.h code/http/http_response.cpp code/http/http_request.cpp code/http/http_request.cpp code/http/http_connect.h code/http/http_connect.cpp code/server/webserver.h code/server/webserver.cpp code/server/epoller.h code/server/epoller.cpp)
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++14 -pthread")
+
+add_executable(myWebServer code/main.cpp code/buffer/buffer.h code/buffer/buffer.cpp code/http/http_request.h code/http/http_request.cpp code/http/http_response.h code/http/http_response.cpp code/http/http_request.cpp code/http/http_request.cpp code/http/http_connect.h code/http/http_connect.cpp code/server/webserver.h code/server/webserver.cpp code/server/epoller.h code/server/epoller.cpp code/pool/threadpool.h code/timer/heap_timer.h code/timer/heap_timer.cpp)
