@@ -1,11 +1,7 @@
 ## 使用方法：
 
-* `mkdir build`
-* `cd build`
-* `cmake ..`
 * `make`
-* `cd ..`
-* `./myWebServer`
+* `./bin/server`
 
 ## 使用 Webbench 测试：
 

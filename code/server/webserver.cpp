@@ -5,7 +5,8 @@
 #include "webserver.h"
 
 WebServer::WebServer(
-        int port, int trigMode, int timeoutMS, bool OptLinger, int threadNum):
+        int port, int trigMode, int timeoutMS, bool OptLinger, int threadNum,
+        int sqlPort, const char* sqlUser, const char* sqlPwd, const char* dbName, int connPoolNum):
         port_(port), openLinger_(OptLinger), timeoutMS_(timeoutMS), isClose_(false),
         epoller_(new Epoller()), threadpool_(new ThreadPool(threadNum)), timer_(new HeapTimer())
 {
@@ -14,7 +15,7 @@ WebServer::WebServer(
     strncat(srcDir_, "/resources/", 16);
     HttpConn::userCount = 0;
     HttpConn::srcDir = srcDir_;
-//    SqlConnPool::Instance()->Init("localhost", sqlPort, sqlUser, sqlPwd, dbName, connPoolNum);
+    SqlConnPool::Instance()->Init("localhost", sqlPort, sqlUser, sqlPwd, dbName, connPoolNum);
 
     InitEventMode_(trigMode);
     if(!InitSocket_()) { isClose_ = true;}
@@ -39,7 +40,7 @@ WebServer::~WebServer() {
     close(listenFd_);
     isClose_ = true;
     free(srcDir_);
-//    SqlConnPool::Instance()->ClosePool();
+    SqlConnPool::Instance()->ClosePool();
 }
 
 void WebServer::InitEventMode_(int trigMode) {

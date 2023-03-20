@@ -158,12 +158,12 @@ void HttpRequest::ParsePost_() {
             //LOG_DEBUG("Tag:%d", tag);
             if(tag == 0 || tag == 1) {
                 bool isLogin = (tag == 1);
-//                if(UserVerify(post_["username"], post_["password"], isLogin)) {
-//                    path_ = "/welcome.html";
-//                }
-//                else {
-//                    path_ = "/error.html";
-//                }
+                if(UserVerify(post_["username"], post_["password"], isLogin)) {
+                    path_ = "/welcome.html";
+                }
+                else {
+                    path_ = "/error.html";
+                }
             }
         }
     }
@@ -208,4 +208,63 @@ void HttpRequest::ParseFromUrlencoded_() {
         value = body_.substr(j, i - j);
         post_[key] = value;
     }
+}
+
+bool HttpRequest::UserVerify(const string &name, const string &pwd, bool isLogin) {
+    if(name.empty() || pwd.empty()) { return false; }
+//    LOG_INFO("Verify name:%s pwd:%s", name.c_str(), pwd.c_str());
+    MYSQL* sql;
+    SqlConnRAII(&sql,  SqlConnPool::Instance());
+    assert(sql);
+
+    bool flag = false;
+    unsigned int j = 0;
+    char order[256] = { 0 };
+    MYSQL_FIELD *fields = nullptr;
+    MYSQL_RES *res = nullptr;
+
+    if(!isLogin) { flag = true; }
+    /* 查询用户及密码 */
+    snprintf(order, 256, "SELECT username, password FROM user WHERE username='%s' LIMIT 1", name.c_str());
+//    LOG_DEBUG("%s", order);
+
+    if(mysql_query(sql, order)) {
+        mysql_free_result(res);
+        return false;
+    }
+    res = mysql_store_result(sql);
+
+    while(MYSQL_ROW row = mysql_fetch_row(res)) {
+//        LOG_DEBUG("MYSQL ROW: %s %s", row[0], row[1]);
+        string password(row[1]);
+        /* 登录行为 */
+        if(isLogin) {
+            if(pwd == password) { flag = true; }
+            else {
+                flag = false;
+//                LOG_DEBUG("pwd error!");
+            }
+        }
+        else {
+            flag = false;
+//            LOG_DEBUG("user used!");
+        }
+    }
+    mysql_free_result(res);
+
+    /* 注册行为 且 用户名未被使用*/
+    if(!isLogin && flag) {
+//        LOG_DEBUG("regirster!");
+        bzero(order, 256);
+        snprintf(order, 256,"INSERT INTO user(username, password) VALUES('%s','%s')", name.c_str(), pwd.c_str());
+//        LOG_DEBUG( "%s", order);
+        if(mysql_query(sql, order)) {
+//            LOG_DEBUG( "Insert error!");
+            flag = false;
+        }
+        flag = true;
+    }
+    SqlConnPool::Instance()->FreeConn(sql);
+//    LOG_DEBUG( "UserVerify success!!");
+    return flag;
 }

@@ -18,10 +18,12 @@
 #include "epoller.h"
 #include "../pool/threadpool.h"
 #include "../timer/heap_timer.h"
+#include "../pool/sql_connect_pool.h"
 
 class WebServer {
 public:
-    WebServer(int port, int trigMode, int timeoutMS, bool OptLinger, int threadNum);
+    WebServer(int port, int trigMode, int timeoutMS, bool OptLinger, int threadNum,
+              int sqlPort, const char* sqlUser, const  char* sqlPwd, const char* dbName, int connPoolNum);
 
     ~WebServer();
     void Start();
