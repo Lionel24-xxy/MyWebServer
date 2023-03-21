@@ -19,11 +19,13 @@
 #include "../pool/threadpool.h"
 #include "../timer/heap_timer.h"
 #include "../pool/sql_connect_pool.h"
+#include "../log/log.h"
 
 class WebServer {
 public:
     WebServer(int port, int trigMode, int timeoutMS, bool OptLinger, int threadNum,
-              int sqlPort, const char* sqlUser, const  char* sqlPwd, const char* dbName, int connPoolNum);
+              int sqlPort, const char* sqlUser, const  char* sqlPwd, const char* dbName, int connPoolNum,
+              bool openLog, int logLevel, int logQueSize);
 
     ~WebServer();
     void Start();
@@ -53,11 +55,11 @@ private:
     bool openLinger_;
     int timeoutMS_;  /* 毫秒MS */
     bool isClose_;
-    int listenFd_{};
+    int listenFd_;
     char* srcDir_;
 
-    uint32_t listenEvent_{};
-    uint32_t connEvent_{};
+    uint32_t listenEvent_;
+    uint32_t connEvent_;
 
     std::unordered_map<int, HttpConn> users_;
     std::unique_ptr<Epoller> epoller_;

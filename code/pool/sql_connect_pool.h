@@ -14,6 +14,7 @@
 #include <cassert>
 
 #include "/usr/include/mysql/mysql.h"
+#include "../log/log.h"
 
 class SqlConnPool {
 public:

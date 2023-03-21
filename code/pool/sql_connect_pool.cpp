@@ -24,7 +24,7 @@ void SqlConnPool::Init(const char* host, int port,
         MYSQL *sql = nullptr;
         sql = mysql_init(sql);
         if (!sql) {
-//            LOG_ERROR("MySql init error!");
+            LOG_ERROR("MySql init error!");
             cout << "MySql init error!" << endl;
             assert(sql);
         }
@@ -32,7 +32,7 @@ void SqlConnPool::Init(const char* host, int port,
                                  user, pwd,
                                  dbName, port, nullptr, 0);
         if (!sql) {
-//            LOG_ERROR("MySql Connect error!");
+            LOG_ERROR("MySql Connect error!");
             cout << "MySql Connect error!" << endl;
         }
         connQue_.push(sql);
@@ -44,8 +44,7 @@ void SqlConnPool::Init(const char* host, int port,
 MYSQL* SqlConnPool::GetConn() {                 // 从连接池取一个连接
     MYSQL *sql = nullptr;
     if(connQue_.empty()){
-//        LOG_WARN("SqlConnPool busy!");
-        cout << "SqlConnPool busy!" << endl;
+        LOG_WARN("SqlConnPool busy!");
         return nullptr;
     }
     sem_wait(&semId_);                      // 等待信号量
